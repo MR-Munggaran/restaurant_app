@@ -1,3 +1,5 @@
+import './restaurant_review.dart';
+
 class RestaurantDetail {
   final String id;
   final String name;
@@ -8,7 +10,7 @@ class RestaurantDetail {
   final List<Category> categories;
   final Menus menus;
   final double rating;
-  final List<CustomerReview> customerReviews;
+  late final List<CustomerReview> customerReviews;
 
   RestaurantDetail({
     required this.id,
@@ -82,25 +84,5 @@ class Drink {
 
   factory Drink.fromJson(Map<String, dynamic> json) {
     return Drink(name: json['name']);
-  }
-}
-
-class CustomerReview {
-  final String name;
-  final String review;
-  final String date;
-
-  CustomerReview({
-    required this.name,
-    required this.review,
-    required this.date,
-  });
-
-  factory CustomerReview.fromJson(Map<String, dynamic> json) {
-    return CustomerReview(
-      name: json['name'],
-      review: json['review'],
-      date: json['date'],
-    );
   }
 }

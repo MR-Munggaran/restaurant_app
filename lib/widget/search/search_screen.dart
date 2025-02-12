@@ -1,14 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant_app/provider/search/restaurant_search_provider.dart';
+import 'package:restaurant_app/static/restaurant_search_result_state.dart';
+
+import './search_widget.dart';
 
 class SearchScreen extends StatelessWidget {
-  final List<String> items = List.generate(10, (index) => "Nama Tempat");
-
-  SearchScreen({super.key});
+  const SearchScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
       appBar: AppBar(
         title: const Text("Search Restaurant"),
         centerTitle: true,
@@ -20,7 +22,7 @@ class SearchScreen extends StatelessWidget {
             padding: const EdgeInsets.all(16.0),
             child: Container(
               decoration: BoxDecoration(
-                color: Colors.brown[300], // Warna latar belakang pencarian
+                color: Colors.blueGrey[300], // Warna latar belakang pencarian
                 borderRadius: BorderRadius.circular(30),
               ),
               child: Padding(
@@ -31,9 +33,14 @@ class SearchScreen extends StatelessWidget {
                     SizedBox(width: 10),
                     Expanded(
                       child: TextField(
+                        onChanged: (value) {
+                          context
+                              .read<RestaurantSearchProvider>()
+                              .fetchSearchResult(value);
+                        },
                         decoration: InputDecoration(
                           hintText: "Search",
-                          hintStyle: TextStyle(color: Colors.black54),
+                          hintStyle: Theme.of(context).textTheme.labelLarge,
                           border: InputBorder.none,
                         ),
                       ),
@@ -45,50 +52,37 @@ class SearchScreen extends StatelessWidget {
           ),
           // List View dibungkus dalam SingleChildScrollView agar bisa discroll
           Expanded(
-            child: SingleChildScrollView(
-              child: ListView.builder(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                itemCount: items.length,
-                shrinkWrap: true, // Supaya ukurannya menyesuaikan isi
-                physics:
-                    NeverScrollableScrollPhysics(), // ScrollView utama yang menangani scroll
-                itemBuilder: (context, index) {
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 8.0),
-                    child: Row(
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            width: 50,
-                            height: 50,
-                            color: Colors.primaries[index %
-                                Colors.primaries
-                                    .length], // Warna berbeda untuk setiap item
-                          ),
-                        ),
-                        SizedBox(width: 12),
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              items[index],
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                            Text("Tempat",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.grey)),
-                            Text("Rating",
-                                style: TextStyle(
-                                    fontSize: 14, color: Colors.orange)),
-                          ],
-                        ),
-                      ],
+            child: Consumer<RestaurantSearchProvider>(
+              builder: (context, value, child) {
+                if (value.resultState is RestaurantSearchNoneState) {
+                  return Center(
+                    child: Text(
+                      "Enter a restaurant name to search",
+                      style: Theme.of(context).textTheme.labelLarge,
                     ),
                   );
-                },
-              ),
+                } else if (value.resultState is RestaurantSearchLoadingState) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (value.resultState is RestaurantSearchLoadedState) {
+                  final restaurants =
+                      (value.resultState as RestaurantSearchLoadedState).data;
+                  return SearchWidget(
+                      restaurants: restaurants); // Pass data to SearchWidget
+                } else if (value.resultState is RestaurantSearchErrorState) {
+                  final errorMessage =
+                      (value.resultState as RestaurantSearchErrorState).error;
+                  // Menampilkan Snackbar tanpa addPostFrameCallback
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                      content: Text(errorMessage),
+                      backgroundColor: Colors.red,
+                    ),
+                  );
+                  return const SizedBox();
+                } else {
+                  return const SizedBox();
+                }
+              },
             ),
           ),
         ],

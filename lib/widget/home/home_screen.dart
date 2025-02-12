@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:restaurant_app/data/api/api_services.dart';
-import 'package:restaurant_app/data/model/res/restaurant_list_response.dart';
+import 'package:provider/provider.dart';
+import 'package:restaurant_app/provider/home/restaurant_list_provider.dart';
 import 'package:restaurant_app/static/navigation_route.dart';
+import 'package:restaurant_app/static/restaurant_list_result_state.dart';
 import 'package:restaurant_app/widget/home/home_widget.dart';
 
 class HomeScreen extends StatefulWidget {
@@ -12,12 +13,12 @@ class HomeScreen extends StatefulWidget {
 }
 
 class _HomeScreenState extends State<HomeScreen> {
-  late Future<RestaurantListResponse> _futureRestaurantResponse;
-
   @override
   void initState() {
     super.initState();
-    _futureRestaurantResponse = ApiServices().getRestaurantList();
+    Future.microtask(() {
+      context.read<RestaurantListProvider>().fetchRestaurantList();
+    });
   }
 
   @override
@@ -33,71 +34,49 @@ class _HomeScreenState extends State<HomeScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Center(
-                child: Text(
-                  "List Restaurant",
-                  style: TextStyle(
-                    fontSize: 24,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.black,
-                  ),
-                ),
+              Center(
+                child: Text("List Restaurant",
+                    style: Theme.of(context).textTheme.headlineLarge),
               ),
               const SizedBox(height: 4),
-              const Center(
+              Center(
                 child: Text(
                   "This is Restaurant For You Gen Z",
-                  style: TextStyle(color: Colors.black),
+                  style: Theme.of(context).textTheme.titleSmall,
                 ),
               ),
               const SizedBox(height: 16),
-              Container(
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(12),
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black26,
-                      blurRadius: 5,
-                      spreadRadius: 2,
-                    )
-                  ],
-                ),
-                clipBehavior: Clip.antiAlias,
+              ClipRRect(
+                borderRadius:
+                    BorderRadius.circular(12), // Menentukan border radius
                 child: Container(
                   height: 250,
                   width: double.infinity,
-                  color: Colors.blue, // Mengganti gambar dengan warna solid
-                  child: const Icon(
-                    Icons.image_not_supported,
-                    size: 40,
-                    color: Colors.white,
+                  decoration: BoxDecoration(
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black26,
+                        blurRadius: 3,
+                        spreadRadius: 1,
+                      ),
+                    ],
+                  ),
+                  child: Image.asset(
+                    'assets/Resot.jpeg',
+                    fit: BoxFit
+                        .cover, // Agar gambar memenuhi area dan mempertahankan proporsinya
                   ),
                 ),
               ),
               const SizedBox(height: 16),
-              FutureBuilder<RestaurantListResponse>(
-                future: _futureRestaurantResponse,
-                builder: (context, snapshot) {
-                  if (snapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(
-                      child: Padding(
-                        padding: EdgeInsets.all(20),
-                        child: CircularProgressIndicator(),
-                      ),
-                    );
-                  } else if (snapshot.connectionState == ConnectionState.done) {
-                    if (snapshot.hasError) {
-                      return Center(
-                        child: Padding(
-                          padding: const EdgeInsets.all(20),
-                          child: Text(snapshot.error.toString()),
-                        ),
-                      );
-                    }
-
-                    final listOfRestaurant = snapshot.data!.restaurants;
-
-                    return GridView.builder(
+              Consumer<RestaurantListProvider>(
+                  builder: (context, value, child) {
+                return switch (value.resultState) {
+                  RestaurantListLoadingState() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  RestaurantListLoadedState(data: var restaurantList) =>
+                    GridView.builder(
                       shrinkWrap: true,
                       physics: const NeverScrollableScrollPhysics(),
                       padding: const EdgeInsets.symmetric(vertical: 10),
@@ -106,27 +85,41 @@ class _HomeScreenState extends State<HomeScreen> {
                         maxCrossAxisExtent: 200,
                         crossAxisSpacing: 7,
                         mainAxisSpacing: 7,
-                        childAspectRatio: 0.8,
+                        childAspectRatio: 0.7,
                       ),
-                      itemCount: listOfRestaurant.length,
+                      itemCount: restaurantList.length,
                       itemBuilder: (context, index) {
-                        final restaurant = listOfRestaurant[index];
+                        final restaurant = restaurantList[index];
 
                         return HomeWidget(
                           restaurant: restaurant,
                           onTap: () => Navigator.pushNamed(
                             context,
                             NavigationRoute.detailRoute.name,
-                            arguments: restaurant,
+                            arguments: restaurant.id,
                           ),
                         );
                       },
-                    );
-                  } else {
-                    return const SizedBox();
-                  }
-                },
-              ),
+                    ),
+                  RestaurantListErrorState(error: var message) =>
+                    // Menampilkan Snackbar saat error terjadi
+                    Builder(
+                      builder: (context) {
+                        // Pastikan Snackbar ditampilkan setelah UI selesai dirender
+                        WidgetsBinding.instance.addPostFrameCallback((_) {
+                          ScaffoldMessenger.of(context).showSnackBar(
+                            SnackBar(
+                              content: Text(message),
+                              backgroundColor: Colors.red,
+                            ),
+                          );
+                        });
+                        return const SizedBox(); // Tidak perlu menampilkan widget lain
+                      },
+                    ),
+                  _ => const SizedBox(),
+                };
+              }),
             ],
           ),
         ),

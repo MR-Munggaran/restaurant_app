@@ -1,16 +1,15 @@
-import '../data/model/endpoint/restaurant.dart';
+import '../data/model/endpoint/restaurant_search.dart';
 
-sealed class RestaurantListResultState {}
+sealed class RestaurantSearchResultState {}
 
-class RestaurantListNoneState extends RestaurantListResultState {}
+class RestaurantSearchNoneState extends RestaurantSearchResultState {}
 
-class RestaurantListLoadingState extends RestaurantListResultState {}
+class RestaurantSearchLoadingState extends RestaurantSearchResultState {}
 
-class RestaurantListErrorState extends RestaurantListResultState {
+class RestaurantSearchErrorState extends RestaurantSearchResultState {
   final String error;
 
-  RestaurantListErrorState(this.error);
-
+  RestaurantSearchErrorState(this.error);
   String get userFriendlyError {
     if (error.contains('Failed to load Restaurant Detail')) {
       return 'Gagal memuat detail restoran. Silakan coba lagi nanti.';
@@ -24,8 +23,8 @@ class RestaurantListErrorState extends RestaurantListResultState {
   }
 }
 
-class RestaurantListLoadedState extends RestaurantListResultState {
-  final List<Restaurant> data;
+class RestaurantSearchLoadedState extends RestaurantSearchResultState {
+  final List<SearchRestaurant> data;
 
-  RestaurantListLoadedState(this.data);
+  RestaurantSearchLoadedState(this.data);
 }
