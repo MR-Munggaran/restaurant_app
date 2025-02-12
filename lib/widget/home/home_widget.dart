@@ -58,7 +58,10 @@ class HomeWidget extends StatelessWidget {
                 color: Colors.transparent,
                 child: Text(
                   restaurant.name,
-                  style: Theme.of(context).textTheme.bodyLarge,
+                  style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                        color:
+                            Colors.black, // Menambahkan warna hitam pada teks
+                      ),
                 ),
               ),
             ),
@@ -73,7 +76,10 @@ class HomeWidget extends StatelessWidget {
                     color: Colors.transparent,
                     child: Text(
                       restaurant.city,
-                      style: Theme.of(context).textTheme.labelLarge,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge
+                          ?.copyWith(color: Colors.black),
                     ),
                   ),
                 ),
@@ -90,7 +96,10 @@ class HomeWidget extends StatelessWidget {
                     color: Colors.transparent,
                     child: Text(
                       restaurant.rating.toString(),
-                      style: Theme.of(context).textTheme.labelLarge,
+                      style: Theme.of(context)
+                          .textTheme
+                          .labelLarge
+                          ?.copyWith(color: Colors.black),
                     ),
                   ),
                 ),

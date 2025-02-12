@@ -71,13 +71,17 @@ class SearchScreen extends StatelessWidget {
                 } else if (value.resultState is RestaurantSearchErrorState) {
                   final errorMessage =
                       (value.resultState as RestaurantSearchErrorState).error;
-                  // Menampilkan Snackbar tanpa addPostFrameCallback
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text(errorMessage),
-                      backgroundColor: Colors.red,
-                    ),
-                  );
+
+                  // Gunakan addPostFrameCallback untuk menampilkan snackbar setelah build
+                  WidgetsBinding.instance.addPostFrameCallback((_) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                        content: Text(errorMessage),
+                        backgroundColor: Colors.red,
+                      ),
+                    );
+                  });
+
                   return const SizedBox();
                 } else {
                   return const SizedBox();
