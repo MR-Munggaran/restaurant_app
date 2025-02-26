@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
+import 'package:restaurant_app/data/model/endpoint/restaurant.dart';
 import 'package:restaurant_app/data/model/res/restaurant_detail_response.dart';
 import 'package:restaurant_app/data/model/res/restaurant_search_response.dart';
 import 'package:restaurant_app/data/model/res/restaurant_review_response.dart';
@@ -26,6 +27,21 @@ class ApiServices {
       } else {
         throw Exception('Terjadi kesalahan: $e');
       }
+    }
+  }
+
+  Future<Restaurant> getRandomRestaurant() async {
+    try {
+      RestaurantListResponse restaurants = await getRestaurantList();
+
+      if (restaurants.restaurants.isEmpty) {
+        throw Exception("Tidak ada restoran tersedia.");
+      }
+
+      restaurants.restaurants.shuffle();
+      return restaurants.restaurants.first;
+    } catch (e) {
+      throw Exception('Gagal mendapatkan restoran acak: $e');
     }
   }
 

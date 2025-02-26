@@ -4,6 +4,7 @@ import 'package:restaurant_app/provider/home/restaurant_list_provider.dart';
 import 'package:restaurant_app/static/navigation_route.dart';
 import 'package:restaurant_app/static/restaurant_list_result_state.dart';
 import 'package:restaurant_app/widget/home/home_widget.dart';
+import 'package:restaurant_app/widget/settings/setting_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -25,7 +26,19 @@ class _HomeScreenState extends State<HomeScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Restaurant Hits"),
+        title: Row(
+          children: [
+            Expanded(child: const Text("Restaurant Hits")),
+            GestureDetector(
+                onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SettingScreen(),
+                      ),
+                    ),
+                child: Icon(Icons.settings))
+          ],
+        ),
         centerTitle: true,
       ),
       body: SingleChildScrollView(

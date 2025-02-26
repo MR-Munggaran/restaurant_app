@@ -17,18 +17,22 @@ class DetailWidget extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               // Restaurant Name with Hero
-              Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Hero(
-                  tag: '${restaurant.id}-name',
-                  child: Material(
-                    color: Colors.transparent,
-                    child: Text(
-                      restaurant.name,
-                      style: Theme.of(context).textTheme.displayLarge,
+              Row(
+                children: [
+                  Padding(
+                    padding: const EdgeInsets.all(16.0),
+                    child: Hero(
+                      tag: '${restaurant.id}-name',
+                      child: Material(
+                        color: Colors.transparent,
+                        child: Text(
+                          restaurant.name,
+                          style: Theme.of(context).textTheme.displayLarge,
+                        ),
+                      ),
                     ),
                   ),
-                ),
+                ],
               ),
 
               // Restaurant Address

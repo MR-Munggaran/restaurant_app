@@ -33,13 +33,32 @@ class RestaurantDetail {
       city: json['city'],
       address: json['address'],
       pictureId: json['pictureId'],
-      categories: List<Category>.from(
-          json['categories'].map((x) => Category.fromJson(x))),
-      menus: Menus.fromJson(json['menus']),
-      rating: json['rating'].toDouble(),
-      customerReviews: List<CustomerReview>.from(
-          json['customerReviews'].map((x) => CustomerReview.fromJson(x))),
+      // Handle categories, menus, and customerReviews gracefully when they're not needed
+      categories: json['categories'] != null
+          ? List<Category>.from(
+              json['categories'].map((x) => Category.fromJson(x)))
+          : [],
+      menus: json['menus'] != null
+          ? Menus.fromJson(json['menus'])
+          : Menus(foods: [], drinks: []),
+      rating: json['rating'] != null ? json['rating'].toDouble() : 0.0,
+      customerReviews: json['customerReviews'] != null
+          ? List<CustomerReview>.from(
+              json['customerReviews'].map((x) => CustomerReview.fromJson(x)))
+          : [],
     );
+  }
+
+  Map<String, dynamic> toJson() {
+    return {
+      "id": id,
+      "name": name,
+      "description": description,
+      "address": address,
+      "city": city,
+      "pictureId": pictureId,
+      "rating": rating,
+    };
   }
 }
 
@@ -50,6 +69,11 @@ class Category {
 
   factory Category.fromJson(Map<String, dynamic> json) {
     return Category(name: json['name']);
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+    };
   }
 }
 
@@ -65,6 +89,12 @@ class Menus {
       drinks: List<Drink>.from(json['drinks'].map((x) => Drink.fromJson(x))),
     );
   }
+  Map<String, dynamic> toJson() {
+    return {
+      "foods": foods.map((food) => food.toJson()).toList(),
+      "drinks": drinks.map((drink) => drink.toJson()).toList(),
+    };
+  }
 }
 
 class Food {
@@ -75,6 +105,11 @@ class Food {
   factory Food.fromJson(Map<String, dynamic> json) {
     return Food(name: json['name']);
   }
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+    };
+  }
 }
 
 class Drink {
@@ -84,5 +119,10 @@ class Drink {
 
   factory Drink.fromJson(Map<String, dynamic> json) {
     return Drink(name: json['name']);
+  }
+  Map<String, dynamic> toJson() {
+    return {
+      "name": name,
+    };
   }
 }
