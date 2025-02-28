@@ -4,11 +4,12 @@ import 'package:restaurant_app/service/theme_service.dart';
 
 class ThemeProvider with ChangeNotifier {
   ThemeMode _themeMode = ThemeMode.light;
-  final ThemeService _themeService = ThemeService();
+  final ThemeService _themeService;
 
   ThemeMode get themeMode => _themeMode;
 
-  ThemeProvider() {
+  ThemeProvider({ThemeService? themeService})
+      : _themeService = themeService ?? ThemeService() {
     _loadThemeFromPreferences();
   }
 
@@ -27,5 +28,9 @@ class ThemeProvider with ChangeNotifier {
     _themeMode =
         themeModel.themeMode == 'dark' ? ThemeMode.dark : ThemeMode.light;
     notifyListeners();
+  }
+
+  Future<void> loadTheme() async {
+    await _loadThemeFromPreferences();
   }
 }
