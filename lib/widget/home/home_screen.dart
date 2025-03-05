@@ -29,14 +29,18 @@ class _HomeScreenState extends State<HomeScreen> {
         title: Row(
           children: [
             Expanded(child: const Text("Restaurant Hits")),
-            GestureDetector(
-                onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => SettingScreen(),
-                      ),
-                    ),
-                child: Icon(Icons.settings))
+            IconButton(
+              key: Key('settings_button'),
+              icon: Icon(Icons.settings),
+              onPressed: () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => SettingScreen(),
+                  ),
+                );
+              },
+            ),
           ],
         ),
         centerTitle: true,
@@ -105,6 +109,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         final restaurant = restaurantList[index];
 
                         return HomeWidget(
+                          key: Key('restaurant_${restaurant.id}'),
                           restaurant: restaurant,
                           onTap: () => Navigator.pushNamed(
                             context,

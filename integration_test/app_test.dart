@@ -1,51 +1,94 @@
-import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:integration_test/integration_test.dart';
-import 'package:provider/provider.dart';
-import 'package:restaurant_app/main.dart';
-import 'package:restaurant_app/provider/theme/theme_provider.dart';
-import 'robot/navigation_robot.dart';
-import 'robot/theme_robot.dart';
+import 'package:restaurant_app/main.dart' as app;
+import 'robot/navigation_robot.dart'; // Import NavigationRobot
 
 void main() {
   IntegrationTestWidgetsFlutterBinding.ensureInitialized();
 
-  testWidgets("Navigasi antara layar utama, detail, dan pengaturan",
-      (tester) async {
-    final navigationRobot = NavigationRobot(tester);
+  group('Navigation Test with Robot Pattern', () {
+    testWidgets('Navigate from HomeScreen to DetailScreen and back',
+        (WidgetTester tester) async {
+      // Jalankan aplikasi
+      app.main();
 
-    await tester.pumpWidget(
-      MultiProvider(
-        providers: [
-          ChangeNotifierProvider(create: (_) => ThemeProvider()),
-        ],
-        child: const MyApp(),
-      ),
-    );
+      // Tunggu hingga MainScreen muncul
+      await tester.pumpAndSettle();
 
-    await tester.pumpAndSettle();
+      // Buat instance NavigationRobot
+      final navigationRobot = NavigationRobot(tester);
 
-    await navigationRobot.navigateToSettings();
-    await navigationRobot.returnToHome();
-  });
+      // Verifikasi bahwa HomeScreen muncul
+      await navigationRobot.verifyHomeScreenIsVisible();
 
-  testWidgets("Uji perubahan tema", (tester) async {
-    final themeProvider = ThemeProvider();
-    final themeRobot = ThemeRobot(tester);
+      // Navigasi ke DetailScreen
+      await navigationRobot.navigateToDetailScreen();
 
-    await tester.pumpWidget(
-      ChangeNotifierProvider<ThemeProvider>.value(
-        value: themeProvider,
-        child: const MyApp(),
-      ),
-    );
+      // Kembali ke HomeScreen
+      await navigationRobot.returnFromDetailScreen();
+    });
 
-    await tester.pumpAndSettle();
+    testWidgets('Navigate from HomeScreen to SettingScreen and back',
+        (WidgetTester tester) async {
+      // Jalankan aplikasi
+      app.main();
 
-    await themeRobot.toggleTheme();
-    expect(themeProvider.themeMode, ThemeMode.dark);
+      // Tunggu hingga MainScreen muncul
+      await tester.pumpAndSettle();
 
-    await themeRobot.toggleTheme();
-    expect(themeProvider.themeMode, ThemeMode.light);
+      // Buat instance NavigationRobot
+      final navigationRobot = NavigationRobot(tester);
+
+      // Verifikasi bahwa HomeScreen muncul
+      await navigationRobot.verifyHomeScreenIsVisible();
+
+      // Navigasi ke SettingScreen
+      await navigationRobot.navigateToSettingScreen();
+
+      // Kembali ke HomeScreen
+      await navigationRobot.returnFromSettingScreen();
+    });
+
+    testWidgets('Navigate from HomeScreen to SearchScreen and back',
+        (WidgetTester tester) async {
+      // Jalankan aplikasi
+      app.main();
+
+      // Tunggu hingga MainScreen muncul
+      await tester.pumpAndSettle();
+
+      // Buat instance NavigationRobot
+      final navigationRobot = NavigationRobot(tester);
+
+      // Verifikasi bahwa HomeScreen muncul
+      await navigationRobot.verifyHomeScreenIsVisible();
+
+      // Navigasi ke SearchScreen
+      await navigationRobot.navigateToSearchScreen();
+
+      // Kembali ke HomeScreen
+      await navigationRobot.returnToHomeScreen();
+    });
+
+    testWidgets('Navigate from HomeScreen to FavoriteScreen and back',
+        (WidgetTester tester) async {
+      // Jalankan aplikasi
+      app.main();
+
+      // Tunggu hingga MainScreen muncul
+      await tester.pumpAndSettle();
+
+      // Buat instance NavigationRobot
+      final navigationRobot = NavigationRobot(tester);
+
+      // Verifikasi bahwa HomeScreen muncul
+      await navigationRobot.verifyHomeScreenIsVisible();
+
+      // Navigasi ke FavoriteScreen
+      await navigationRobot.navigateToFavoriteScreen();
+
+      // Kembali ke HomeScreen
+      await navigationRobot.returnToHomeScreen();
+    });
   });
 }

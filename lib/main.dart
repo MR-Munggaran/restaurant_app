@@ -80,7 +80,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
+      builder: (context, themeProvider, child) {
         return MaterialApp(
           title: 'Restaurant App',
           theme: RestaurantTheme.lightTheme,
