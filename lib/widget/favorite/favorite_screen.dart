@@ -23,86 +23,67 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("My Favorite"),
-        centerTitle: true,
-      ),
+      appBar: AppBar(title: const Text("My Favorite"), centerTitle: true),
       body: Consumer<LocalDatabaseProvider>(
         builder: (context, value, child) {
           final favoriteList = value.restaurantList ?? [];
-          print("Favorite list length: ${favoriteList.length}");
-          return favoriteList.isEmpty
-              ? Center(
-                  child: Text(
-                    "No favorites added yet.",
-                    style: Theme.of(context).textTheme.bodyLarge,
+
+          if (value.message.contains("Failed")) {
+            return Center(
+              child: Text(value.message, style: TextStyle(color: Colors.red)),
+            );
+          }
+
+          if (favoriteList.isEmpty) {
+            return Center(
+              child: Text(
+                "No favorites added yet.",
+                style: Theme.of(context).textTheme.bodyLarge,
+              ),
+            );
+          }
+
+          return ListView.builder(
+            padding: const EdgeInsets.all(16.0),
+            itemCount: favoriteList.length,
+            itemBuilder: (context, index) {
+              final restaurant = favoriteList[index];
+              return Card(
+                elevation: 2,
+                margin: const EdgeInsets.only(bottom: 16),
+                child: ListTile(
+                  onTap: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => DetailScreen(restId: restaurant.id),
+                    ),
                   ),
-                )
-              : ListView.builder(
-                  itemCount: favoriteList.length,
-                  itemBuilder: (context, index) {
-                    final restaurant = favoriteList[index];
-                    return GestureDetector(
-                      onTap: () => Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) =>
-                              DetailScreen(restId: restaurant.id),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(16.0),
-                        child: Row(
-                          children: [
-                            ClipRRect(
-                              borderRadius: BorderRadius.circular(12),
-                              child: Image.network(
-                                "https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}",
-                                width: 70,
-                                height: 70,
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                            const SizedBox(width: 12),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    restaurant.name,
-                                    style:
-                                        Theme.of(context).textTheme.titleMedium,
-                                  ),
-                                  Text(
-                                    restaurant.city,
-                                    style:
-                                        Theme.of(context).textTheme.labelLarge,
-                                  ),
-                                  Row(
-                                    children: [
-                                      const Icon(
-                                        Icons.star,
-                                        color: Colors.orange,
-                                        size: 16,
-                                      ),
-                                      const SizedBox(width: 4),
-                                      Text(
-                                        restaurant.rating.toString(),
-                                        style: Theme.of(context)
-                                            .textTheme
-                                            .bodyMedium,
-                                      ),
-                                    ],
-                                  )
-                                ],
-                              ),
-                            )
-                          ],
-                        ),
-                      ),
-                    );
-                  },
-                );
+                  leading: ClipRRect(
+                    borderRadius: BorderRadius.circular(12),
+                    child: Image.network(
+                      "https://restaurant-api.dicoding.dev/images/small/${restaurant.pictureId}",
+                      width: 50,
+                      height: 50,
+                      fit: BoxFit.cover,
+                      errorBuilder: (_, __, ___) {
+                        return Icon(Icons.error_outline, color: Colors.red);
+                      },
+                    ),
+                  ),
+                  title: Text(restaurant.name),
+                  subtitle: Text(restaurant.city),
+                  trailing: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.star, color: Colors.orange, size: 16),
+                      SizedBox(width: 4),
+                      Text(restaurant.rating.toString()),
+                    ],
+                  ),
+                ),
+              );
+            },
+          );
         },
       ),
     );

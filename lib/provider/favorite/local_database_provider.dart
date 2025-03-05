@@ -21,14 +21,12 @@ class LocalDatabaseProvider extends ChangeNotifier {
       final id = await _service.insertItem(value);
       if (id == '-1') {
         _message = "Failed to save your data";
-        print("Failed to save data");
       } else {
         _message = "Your data is saved";
-        print("Data saved with id: $id");
       }
       notifyListeners();
     } catch (e) {
-      _message = "Failed to save your data";
+      _message = "Failed to save your data: ${e.toString()}";
       notifyListeners();
     }
   }
@@ -36,14 +34,10 @@ class LocalDatabaseProvider extends ChangeNotifier {
   Future<void> loadAllRestaurantValue() async {
     try {
       _restaurantList = await _service.getAllItems();
-      print("All saved data:");
-      for (var restaurant in _restaurantList!) {
-        print(restaurant.name);
-      }
       _message = "All of your data is loaded";
       notifyListeners();
     } catch (e) {
-      _message = "Failed to load your all data";
+      _message = "Failed to load your all data: ${e.toString()}";
       notifyListeners();
     }
   }
@@ -54,7 +48,7 @@ class LocalDatabaseProvider extends ChangeNotifier {
       _message = "Your data is loaded";
       notifyListeners();
     } catch (e) {
-      _message = "Failed to load your data";
+      _message = "Failed to load your data: ${e.toString()}";
       notifyListeners();
     }
   }
@@ -62,11 +56,10 @@ class LocalDatabaseProvider extends ChangeNotifier {
   Future<void> removeRestaurantValueById(String id) async {
     try {
       await _service.removeItem(id);
-
       _message = "Your data is removed";
       notifyListeners();
     } catch (e) {
-      _message = "Failed to remove your data";
+      _message = "Failed to remove your data: ${e.toString()}";
       notifyListeners();
     }
   }

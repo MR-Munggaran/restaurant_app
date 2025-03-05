@@ -77,18 +77,13 @@ class LocalNotificationService {
       );
     } else if (defaultTargetPlatform == TargetPlatform.android) {
       final notificationEnabled = await _isAndroidPermissionGranted();
-      // todo-01-notif-03: add a request
       final requestAlarmEnabled = await _requestExactAlarmsPermission();
       if (!notificationEnabled) {
         final requestNotificationsPermission =
             await _requestAndroidNotificationsPermission();
-        return requestNotificationsPermission // todo-01-notif-03: add a request
-            &&
-            requestAlarmEnabled;
+        return requestNotificationsPermission && requestAlarmEnabled;
       }
-      return notificationEnabled // todo-01-notif-03: add a request
-          &&
-          requestAlarmEnabled;
+      return notificationEnabled && requestAlarmEnabled;
     } else {
       return false;
     }
@@ -151,7 +146,7 @@ class LocalNotificationService {
   }
 
   Future<void> scheduleDailyElevenAMNotification({
-    required int id, // Menambahkan parameter untuk teks notifikasi
+    required int id,
     String channelId = "3",
     String channelName = "Schedule Notification",
   }) async {
@@ -178,7 +173,7 @@ class LocalNotificationService {
     await flutterLocalNotificationsPlugin.zonedSchedule(
       id,
       'Waktunya Makan Siang',
-      'Yuk Cek Resto yang hits sekarang!', // Menampilkan nama restoran yang diambil
+      'Yuk Cek Resto yang hits sekarang!',
       datetimeSchedule,
       notificationDetails,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -192,8 +187,10 @@ class LocalNotificationService {
       id: id,
       title: 'Waktunya Makan Siang',
       body: 'Yuk Cek Resto yang hits sekarang!',
+      isNotificationSet: true, // Tandakan bahwa notifikasi telah dijadwalkan
     );
 
+    // Menyimpan ke SharedPreferences
     await _notificationPreferences.saveNotification(receivedNotification);
   }
 
@@ -213,5 +210,13 @@ class LocalNotificationService {
 
   Future<void> cancelNotification(int id) async {
     await flutterLocalNotificationsPlugin.cancel(id);
+    // Update status notifikasi menjadi false
+    final receivedNotification = ReceivedNotification(
+      id: id,
+      title: 'Waktunya Makan Siang',
+      body: 'Yuk Cek Resto yang hits sekarang!',
+      isNotificationSet: false, // Tandakan bahwa notifikasi telah dibatalkan
+    );
+    await _notificationPreferences.saveNotification(receivedNotification);
   }
 }

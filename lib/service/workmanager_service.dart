@@ -37,7 +37,8 @@ class WorkmanagerService with ChangeNotifier {
   bool _isTaskRunning = false;
 
   WorkmanagerService([Workmanager? workmanager])
-      : _workmanager = workmanager ??= Workmanager();
+      : _workmanager = workmanager ?? Workmanager();
+
   bool get isTaskRunning => _isTaskRunning;
 
   Future<void> init() async {
@@ -45,15 +46,31 @@ class WorkmanagerService with ChangeNotifier {
   }
 
   Future<void> runPeriodicTask() async {
+    // Waktu target (11:00 AM)
+    final now = DateTime.now();
+    final targetTime = DateTime(now.year, now.month, now.day, 11, 0);
+
+    // Hitung initialDelay
+    Duration initialDelay;
+    if (now.isBefore(targetTime)) {
+      // Jika waktu saat ini sebelum pukul 11:00 AM hari ini
+      initialDelay = targetTime.difference(now);
+    } else {
+      // Jika waktu saat ini setelah pukul 11:00 AM hari ini, set untuk besok
+      initialDelay = targetTime.add(Duration(days: 1)).difference(now);
+    }
+
+    // Register periodic task
     await _workmanager.registerPeriodicTask(
       MyWorkmanager.periodic.uniqueName,
       MyWorkmanager.periodic.taskName,
-      frequency: const Duration(minutes: 10),
-      initialDelay: Duration.zero,
+      frequency: const Duration(hours: 24), // Set frequency ke 24 jam (1 hari)
+      initialDelay: initialDelay,
       inputData: {
         "data": "This is a valid payload from periodic task workmanager",
       },
     );
+
     _isTaskRunning = true;
     notifyListeners();
   }

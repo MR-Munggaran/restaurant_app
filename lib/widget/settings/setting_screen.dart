@@ -76,11 +76,9 @@ class _SettingScreenState extends State<SettingScreen> {
                             labels: ['YES', ''],
                             icons: [null, Icons.cancel_presentation_sharp],
                             onToggle: (index) async {
-                              if (index == 0) {
-                                await _scheduleDailyElevenAMNotification();
-                              } else {
-                                await _disableNotifications(context);
-                              }
+                              context
+                                  .read<LocalNotificationProvider>()
+                                  .toggleDailyNotification();
                             },
                           ),
                         ],
@@ -113,47 +111,47 @@ class _SettingScreenState extends State<SettingScreen> {
                         ],
                       ),
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 10.0),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: Text("Set Resto Hits",
-                                style:
-                                    Theme.of(context).textTheme.headlineSmall),
-                          ),
-                          ToggleSwitch(
-                            minWidth: 50.0,
-                            minHeight: 30.0,
-                            cornerRadius: 20.0,
-                            activeFgColor: Colors.white,
-                            inactiveBgColor: Colors.grey,
-                            inactiveFgColor: Colors.white,
-                            totalSwitches: 2,
-                            icons: [
-                              Icons.check,
-                              Icons.cancel_presentation_sharp
-                            ],
-                            activeBgColors: [
-                              [Colors.blue],
-                              [Colors.pink]
-                            ],
-                            initialLabelIndex: context
-                                    .watch<WorkmanagerService>()
-                                    .isTaskRunning
-                                ? 0
-                                : 1,
-                            onToggle: (index) {
-                              if (index == 0) {
-                                _runBackgroundPeriodicTask();
-                              } else {
-                                _cancelAllTaskInBackground();
-                              }
-                            },
-                          ),
-                        ],
-                      ),
-                    ),
+                    // Padding(
+                    //   padding: const EdgeInsets.symmetric(vertical: 10.0),
+                    //   child: Row(
+                    //     children: [
+                    //       Expanded(
+                    //         child: Text("Set Resto Hits",
+                    //             style:
+                    //                 Theme.of(context).textTheme.headlineSmall),
+                    //       ),
+                    //       ToggleSwitch(
+                    //         minWidth: 50.0,
+                    //         minHeight: 30.0,
+                    //         cornerRadius: 20.0,
+                    //         activeFgColor: Colors.white,
+                    //         inactiveBgColor: Colors.grey,
+                    //         inactiveFgColor: Colors.white,
+                    //         totalSwitches: 2,
+                    //         icons: [
+                    //           Icons.check,
+                    //           Icons.cancel_presentation_sharp
+                    //         ],
+                    //         activeBgColors: [
+                    //           [Colors.blue],
+                    //           [Colors.pink]
+                    //         ],
+                    //         initialLabelIndex: context
+                    //                 .watch<WorkmanagerService>()
+                    //                 .isTaskRunning
+                    //             ? 0
+                    //             : 1,
+                    //         onToggle: (index) {
+                    //           if (index == 0) {
+                    //             _runBackgroundPeriodicTask();
+                    //           } else {
+                    //             _cancelAllTaskInBackground();
+                    //           }
+                    //         },
+                    //       ),
+                    //     ],
+                    //   ),
+                    // ),
                   ],
                 ),
               ),
@@ -164,32 +162,32 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  Future<void> _scheduleDailyElevenAMNotification() async {
-    context
-        .read<LocalNotificationProvider>()
-        .scheduleDailyElevenAMNotification();
-  }
+  // Future<void> _scheduleDailyElevenAMNotification() async {
+  //   context
+  //       .read<LocalNotificationProvider>()
+  //       .scheduleDailyElevenAMNotification();
+  // }
 
-  Future<void> _disableNotifications(BuildContext context) async {
-    // Calling checkPendingNotificationRequests from LocalNotificationProvider
-    await context
-        .read<LocalNotificationProvider>()
-        .checkPendingNotificationRequests(context);
+  // Future<void> _disableNotifications(BuildContext context) async {
+  //   // Calling checkPendingNotificationRequests from LocalNotificationProvider
+  //   await context
+  //       .read<LocalNotificationProvider>()
+  //       .checkPendingNotificationRequests(context);
 
-    // Get pending notifications from provider
-    final pendingNotifications =
-        context.read<LocalNotificationProvider>().pendingNotificationRequests;
+  //   // Get pending notifications from provider
+  //   final pendingNotifications =
+  //       context.read<LocalNotificationProvider>().pendingNotificationRequests;
 
-    // Cancel and delete each pending notification
-    for (var request in pendingNotifications) {
-      await context
-          .read<LocalNotificationProvider>()
-          .cancelNotification(request.id);
-      await context
-          .read<LocalNotificationProvider>()
-          .deleteSavedNotification(request.id);
-    }
-  }
+  //   // Cancel and delete each pending notification
+  //   for (var request in pendingNotifications) {
+  //     await context
+  //         .read<LocalNotificationProvider>()
+  //         .cancelNotification(request.id);
+  //     await context
+  //         .read<LocalNotificationProvider>()
+  //         .deleteSavedNotification(request.id);
+  //   }
+  // }
 
   Future<void> _checkPendingNotificationRequests() async {
     final localNotificationProvider = context.read<LocalNotificationProvider>();
@@ -249,11 +247,11 @@ class _SettingScreenState extends State<SettingScreen> {
     );
   }
 
-  void _runBackgroundPeriodicTask() async {
-    context.read<WorkmanagerService>().runPeriodicTask();
-  }
+  // void _runBackgroundPeriodicTask() async {
+  //   context.read<WorkmanagerService>().runPeriodicTask();
+  // }
 
-  void _cancelAllTaskInBackground() async {
-    context.read<WorkmanagerService>().cancelAllTask();
-  }
+  // void _cancelAllTaskInBackground() async {
+  //   context.read<WorkmanagerService>().cancelAllTask();
+  // }
 }

@@ -1,0 +1,2 @@
+D:/restaurant_app/android/app/.cxx/Debug/g738p176/armeabi-v7a/CMakeFiles/edit_cache.dir
+D:/restaurant_app/android/app/.cxx/Debug/g738p176/armeabi-v7a/CMakeFiles/rebuild_cache.dir
