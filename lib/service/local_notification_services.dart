@@ -130,13 +130,6 @@ class LocalNotificationService {
       iOS: iOSPlatformChannelSpecifics,
     );
 
-    final notificationData = NotificationResto(
-      id: id,
-      nameRestaurant: resto,
-      rating: rate,
-    );
-    await _notifrestoPreferences.saveNotification(notificationData);
-
     await flutterLocalNotificationsPlugin.show(
       id,
       'Makan Di $resto?',

@@ -58,9 +58,9 @@ void main() async {
           create: (context) =>
               LocalDatabaseProvider(context.read<LocalDatabaseService>()),
         ),
-        // ChangeNotifierProvider(
-        //   create: (context) => WorkmanagerService()..init(),
-        // ),
+        ChangeNotifierProvider(
+          create: (context) => WorkmanagerService()..init(),
+        ),
 
         // Notification Providers
         ChangeNotifierProvider(
