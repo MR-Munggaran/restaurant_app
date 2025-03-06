@@ -13,11 +13,12 @@ class ReviewResponse {
 
   factory ReviewResponse.fromJson(Map<String, dynamic> json) {
     return ReviewResponse(
-      error: json['error'],
-      message: json['message'],
-      customerReviews: List<CustomerReview>.from(
-        json['customerReviews'].map((x) => CustomerReview.fromJson(x)),
-      ),
+      error: json['error'] ?? false, // Default value if null
+      message: json['message'] ?? "", // Default value if null
+      customerReviews: json['customerReviews'] != null // Check for null
+          ? List<CustomerReview>.from(
+              json['customerReviews'].map((x) => CustomerReview.fromJson(x)))
+          : [], // Return empty list if null
     );
   }
 }

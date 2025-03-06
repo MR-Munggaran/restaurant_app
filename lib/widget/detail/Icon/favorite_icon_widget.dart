@@ -17,50 +17,51 @@ class FavoriteIconWidget extends StatefulWidget {
 }
 
 class _FavoriteIconWidgetState extends State<FavoriteIconWidget> {
-  late final LocalDatabaseProvider localDatabaseProvider;
-  late final FavoriteIconProvider favoriteIconProvider;
-
   @override
-  void initState() {
-    super.initState();
-    // Move provider reads inside the build method or use context after the widget is fully initialized
-    Future.microtask(() async {
-      localDatabaseProvider = context.read<LocalDatabaseProvider>();
-      favoriteIconProvider = context.read<FavoriteIconProvider>();
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _loadFavoriteState();
+  }
 
-      await localDatabaseProvider.loadRestaurantValueById(widget.restaurant.id);
-      final value = localDatabaseProvider.restaurant == null
-          ? false
-          : localDatabaseProvider.restaurant!.id == widget.restaurant.id;
-      favoriteIconProvider.isFavorited = value;
-    });
+  Future<void> _loadFavoriteState() async {
+    final localDatabaseProvider = context.read<LocalDatabaseProvider>();
+    final favoriteIconProvider = context.read<FavoriteIconProvider>();
+
+    await localDatabaseProvider.loadRestaurantValueById(widget.restaurant.id);
+    final isFavorite = localDatabaseProvider.restaurant != null &&
+        localDatabaseProvider.restaurant!.id == widget.restaurant.id;
+
+    favoriteIconProvider.isFavorited = isFavorite;
   }
 
   @override
   Widget build(BuildContext context) {
-    return IconButton(
-      onPressed: () async {
-        final isFavorite = context.read<FavoriteIconProvider>().isFavorite;
-        if (isFavorite) {
-          await context
-              .read<LocalDatabaseProvider>()
-              .removeRestaurantValueById(widget.restaurant.id);
-        } else {
-          await context
-              .read<LocalDatabaseProvider>()
-              .saveRestaurantValue(widget.restaurant);
-        }
-        context.read<FavoriteIconProvider>().isFavorited = !isFavorite;
-        context.read<LocalDatabaseProvider>().loadAllRestaurantValue();
+    return Consumer<FavoriteIconProvider>(
+      builder: (context, favoriteIconProvider, child) {
+        return IconButton(
+          onPressed: () async {
+            final isFavorite = favoriteIconProvider.isFavorite;
+            final localDatabaseProvider = context.read<LocalDatabaseProvider>();
+
+            if (isFavorite) {
+              await localDatabaseProvider
+                  .removeRestaurantValueById(widget.restaurant.id);
+            } else {
+              await localDatabaseProvider
+                  .saveRestaurantValue(widget.restaurant);
+            }
+
+            // Memuat ulang state favorit setelah perubahan
+            await _loadFavoriteState();
+          },
+          icon: Icon(
+            favoriteIconProvider.isFavorite
+                ? Icons.favorite
+                : Icons.favorite_border_outlined,
+            color: Colors.red,
+          ),
+        );
       },
-      icon: Icon(
-        context.watch<FavoriteIconProvider>().isFavorite
-            ? Icons.favorite
-            : Icons.favorite_border_outlined,
-        color: context.watch<FavoriteIconProvider>().isFavorite
-            ? Colors.red
-            : Colors.red,
-      ),
     );
   }
 }

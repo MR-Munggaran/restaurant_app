@@ -22,7 +22,7 @@ class HomeWidget extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Hero(
-              tag: restaurant.id,
+              tag: restaurant.id.toString(),
               child: ClipRRect(
                 borderRadius: BorderRadius.circular(8),
                 child: Image.network(
@@ -57,7 +57,7 @@ class HomeWidget extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: Text(
-                  restaurant.name,
+                  restaurant.name.toString(),
                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                         color:
                             Colors.black, // Menambahkan warna hitam pada teks
@@ -75,7 +75,7 @@ class HomeWidget extends StatelessWidget {
                   child: Material(
                     color: Colors.transparent,
                     child: Text(
-                      restaurant.city,
+                      restaurant.city.toString(),
                       style: Theme.of(context)
                           .textTheme
                           .labelLarge

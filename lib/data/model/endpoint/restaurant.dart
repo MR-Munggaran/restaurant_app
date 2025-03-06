@@ -1,28 +1,28 @@
 class Restaurant {
-  final String id;
-  final String name;
-  final String description;
-  final String pictureId;
-  final String city;
-  final double rating;
+  final String? id; // Made nullable
+  final String? name; // Made nullable
+  final String? description; // Made nullable
+  final String? pictureId; // Made nullable
+  final String? city; // Made nullable
+  final double? rating; // Made nullable
 
   Restaurant({
-    required this.id,
-    required this.name,
-    required this.description,
-    required this.pictureId,
-    required this.city,
-    required this.rating,
+    this.id, // Removed 'required' to allow null
+    this.name, // Removed 'required' to allow null
+    this.description, // Removed 'required' to allow null
+    this.pictureId, // Removed 'required' to allow null
+    this.city, // Removed 'required' to allow null
+    this.rating, // Removed 'required' to allow null
   });
 
   factory Restaurant.fromJson(Map<String, dynamic> json) {
     return Restaurant(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      pictureId: json['pictureId'],
-      city: json['city'],
-      rating: json['rating'].toDouble(),
+      id: json['id'] as String?, // Cast to nullable String
+      name: json['name'] as String?, // Cast to nullable String
+      description: json['description'] as String?, // Cast to nullable String
+      pictureId: json['pictureId'] as String?, // Cast to nullable String
+      city: json['city'] as String?, // Cast to nullable String
+      rating: (json['rating'] as num?)?.toDouble(), // Cast to nullable double
     );
   }
 

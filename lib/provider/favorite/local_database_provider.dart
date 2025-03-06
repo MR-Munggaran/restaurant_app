@@ -27,6 +27,7 @@ class LocalDatabaseProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _message = "Failed to save your data: ${e.toString()}";
+      _restaurant = null;
       notifyListeners();
     }
   }
@@ -38,6 +39,7 @@ class LocalDatabaseProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _message = "Failed to load your all data: ${e.toString()}";
+      _restaurant = null;
       notifyListeners();
     }
   }
@@ -49,6 +51,7 @@ class LocalDatabaseProvider extends ChangeNotifier {
       notifyListeners();
     } catch (e) {
       _message = "Failed to load your data: ${e.toString()}";
+      _restaurant = null;
       notifyListeners();
     }
   }

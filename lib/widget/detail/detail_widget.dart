@@ -60,6 +60,19 @@ class DetailWidget extends StatelessWidget {
                     height: 300,
                     width: double.infinity,
                     fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 300,
+                        width: double.infinity,
+                        color: Colors.grey[300],
+                        child: Center(
+                          child: Text(
+                            'Gagal memuat gambar',
+                            style: Theme.of(context).textTheme.bodyMedium,
+                          ),
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -213,13 +226,13 @@ class DetailWidget extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(review.name,
+                                      Text(review.name.toString(),
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyLarge
                                               ?.copyWith(color: Colors.black)),
                                       const SizedBox(width: 8),
-                                      Text(review.date,
+                                      Text(review.date.toString(),
                                           style: Theme.of(context)
                                               .textTheme
                                               .bodyMedium
@@ -227,7 +240,7 @@ class DetailWidget extends StatelessWidget {
                                     ],
                                   ),
                                   const SizedBox(height: 8),
-                                  Text(review.review,
+                                  Text(review.review.toString(),
                                       style: Theme.of(context)
                                           .textTheme
                                           .bodyMedium

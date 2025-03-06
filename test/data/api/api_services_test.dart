@@ -1,108 +1,234 @@
 import 'dart:convert';
+
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
+import 'package:mockito/annotations.dart';
+import 'package:mockito/mockito.dart';
 import 'package:restaurant_app/data/api/api_services.dart';
 
+import 'fetch_api_test.mocks.dart';
+
+// Generate a MockClient using the Mockito package.
+// Create new instances of this class in each test.
+@GenerateMocks([http.Client])
 void main() {
   group('ApiServices', () {
+    late MockClient mockClient;
     late ApiServices apiServices;
 
     setUp(() {
-      apiServices = ApiServices();
+      mockClient = MockClient();
+      apiServices = ApiServices(client: mockClient);
     });
 
-    test('should return RestaurantListResponse when response code is 200',
-        () async {
-      final uri = Uri.parse("https://restaurant-api.dicoding.dev/list");
-      final response = await http.get(uri);
+    group('getRestaurantList', () {
+      test(
+          'returns a RestaurantListResponse if the http call completes successfully',
+          () async {
+        final jsonString = '''
+    {   "restaurants": [
+          {
+              "id": "rqdv5juczeskfw1e867",
+              "name": "Melting Pot",
+              "description": "Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. ...",
+              "pictureId": "14",
+              "city": "Medan",
+              "rating": 4.2
+          },
+          {
+              "id": "s1knt6za9kkfw1e867",
+              "name": "Kafe Kita",
+              "description": "Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper ultricies nisi. ...",
+              "pictureId": "25",
+              "city": "Gorontalo",
+              "rating": 4
+          }
+      ]}
+    ''';
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response(jsonString, 200));
 
-      if (response.statusCode == 200) {
-        final result = await apiServices.getRestaurantList();
-        expect(result.restaurants, isNotEmpty);
-        expect(result.restaurants.first.name, "Melting Pot");
-      } else {
-        fail("Failed to fetch data");
-      }
+        final response = await apiServices.getRestaurantList();
+        expect(response.restaurants.length, 2); // Perbaiki jumlah restoran
+        expect(response.restaurants.first.name,
+            'Melting Pot'); // Perbaiki nama restoran
+      });
+
+      test('throws an exception if the http call completes with an error',
+          () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response('Not Found', 404));
+
+        expect(apiServices.getRestaurantList(), throwsException);
+      });
+
+      test('throws an exception if the response body is empty', () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        expect(apiServices.getRestaurantList(), throwsException);
+      });
     });
 
-    test('should throw Exception when response code is 404', () async {
-      final uri = Uri.parse("https://restaurant-api.dicoding.dev/list");
-      final response = await http.get(uri);
+    group('getRandomRestaurant', () {
+      test('returns a Restaurant if the http call completes successfully',
+          () async {
+        final jsonString =
+            '{"restaurants": [{"id": "1", "name": "Test Restaurant", "description": "Test Description"}]}';
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response(jsonString, 200));
 
-      if (response.statusCode == 404) {
+        final restaurant = await apiServices.getRandomRestaurant();
+        expect(restaurant.name, 'Test Restaurant');
+      });
+
+      test('throws an exception if the http call completes with an error',
+          () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response('Not Found', 404));
+
+        expect(apiServices.getRandomRestaurant(), throwsException);
+      });
+
+      test('throws an exception if the response body is empty', () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        expect(apiServices.getRandomRestaurant(), throwsException);
+      });
+
+      test('throws an exception if there are no restaurants available',
+          () async {
+        final jsonString = '{"restaurants": []}';
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/list')))
+            .thenAnswer((_) async => http.Response(jsonString, 200));
+
+        expect(apiServices.getRandomRestaurant(), throwsException);
+      });
+    });
+
+    group('getRestaurantDetail', () {
+      test(
+          'returns a RestaurantDetailResponse if the http call completes successfully',
+          () async {
+        final jsonString =
+            '{"restaurant": {"id": "1", "name": "Test Restaurant", "description": "Test Description"}}';
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/detail/1')))
+            .thenAnswer((_) async => http.Response(jsonString, 200));
+
+        final response = await apiServices.getRestaurantDetail('1');
+        expect(response.restaurant.name, 'Test Restaurant');
+      });
+
+      test('throws an exception if the http call completes with an error',
+          () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/detail/1')))
+            .thenAnswer((_) async => http.Response('Not Found', 404));
+
+        expect(apiServices.getRestaurantDetail('1'), throwsException);
+      });
+
+      test('throws an exception if the response body is empty', () async {
+        when(mockClient
+                .get(Uri.parse('https://restaurant-api.dicoding.dev/detail/1')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        expect(apiServices.getRestaurantDetail('1'), throwsException);
+      });
+    });
+
+    group('searchRestaurant', () {
+      test(
+          'returns a SearchRestaurantResponse if the http call completes successfully',
+          () async {
+        final jsonString =
+            '{"restaurants": [{"id": "1", "name": "Test Restaurant", "description": "Test Description"}]}';
+        when(mockClient.get(
+                Uri.parse('https://restaurant-api.dicoding.dev/search?q=test')))
+            .thenAnswer((_) async => http.Response(jsonString, 200));
+
+        final response = await apiServices.searchRestaurant('test');
+        expect(response.restaurants.length, 1);
+        expect(response.restaurants.first.name, 'Test Restaurant');
+      });
+
+      test('throws an exception if the http call completes with an error',
+          () async {
+        when(mockClient.get(
+                Uri.parse('https://restaurant-api.dicoding.dev/search?q=test')))
+            .thenAnswer((_) async => http.Response('Not Found', 404));
+
+        expect(apiServices.searchRestaurant('test'), throwsException);
+      });
+
+      test('throws an exception if the response body is empty', () async {
+        when(mockClient.get(
+                Uri.parse('https://restaurant-api.dicoding.dev/search?q=test')))
+            .thenAnswer((_) async => http.Response('', 200));
+
+        expect(apiServices.searchRestaurant('test'), throwsException);
+      });
+    });
+
+    group('postReview', () {
+      test('returns a ReviewResponse if the http call completes successfully',
+          () async {
+        final jsonString =
+            '{"customerReviews": [{"name": "John Doe", "review": "Great restaurant!"}]}';
+        when(mockClient.post(
+          Uri.parse('https://restaurant-api.dicoding.dev/review'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(
+              {"id": "1", "name": "John Doe", "review": "Great restaurant!"}),
+        )).thenAnswer((_) async => http.Response(jsonString, 201));
+
+        final response = await apiServices.postReview(
+            restaurantId: '1', name: 'John Doe', review: 'Great restaurant!');
+        expect(response.customerReviews.length, 1);
+        expect(response.customerReviews.first.name, 'John Doe');
+      });
+
+      test('throws an exception if the http call completes with an error',
+          () async {
+        when(mockClient.post(
+          Uri.parse('https://restaurant-api.dicoding.dev/review'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(
+              {"id": "1", "name": "John Doe", "review": "Great restaurant!"}),
+        )).thenAnswer((_) async => http.Response('Bad Request', 400));
+
         expect(
-            () => apiServices.getRestaurantList(),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
-                contains('Daftar restoran tidak ditemukan.'))));
-      }
-    });
+            apiServices.postReview(
+                restaurantId: '1',
+                name: 'John Doe',
+                review: 'Great restaurant!'),
+            throwsException);
+      });
 
-    test('should throw Exception when response is a server error', () async {
-      final uri = Uri.parse("https://restaurant-api.dicoding.dev/list");
-      final response = await http.get(uri);
+      test('throws an exception if the response body is empty', () async {
+        when(mockClient.post(
+          Uri.parse('https://restaurant-api.dicoding.dev/review'),
+          headers: {"Content-Type": "application/json"},
+          body: jsonEncode(
+              {"id": "1", "name": "John Doe", "review": "Great restaurant!"}),
+        )).thenAnswer((_) async => http.Response('', 201));
 
-      if (response.statusCode == 500) {
         expect(
-            () => apiServices.getRestaurantList(),
-            throwsA(isA<Exception>().having((e) => e.toString(), 'message',
-                contains('Gagal memuat Daftar Restoran. Server error.'))));
-      }
-    });
-
-    test('should return RestaurantDetailResponse when response code is 200',
-        () async {
-      final uri = Uri.parse(
-          "https://restaurant-api.dicoding.dev/detail/rqdv5juczeskfw1e867");
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        final result =
-            await apiServices.getRestaurantDetail("rqdv5juczeskfw1e867");
-        expect(result.restaurant.name, "Melting Pot");
-      } else {
-        fail("Failed to fetch restaurant detail");
-      }
-    });
-
-    test('should return SearchRestaurantResponse when response code is 200',
-        () async {
-      final uri = Uri.parse(
-          "https://restaurant-api.dicoding.dev/search?q=Melting%20Pot");
-      final response = await http.get(uri);
-
-      if (response.statusCode == 200) {
-        final result = await apiServices.searchRestaurant("Melting Pot");
-        expect(result.restaurants.first.name, "Melting Pot");
-      } else {
-        fail("Failed to fetch search results");
-      }
-    });
-
-    test('should return ReviewResponse when posting a review successfully',
-        () async {
-      final uri = Uri.parse("https://restaurant-api.dicoding.dev/review");
-      final response = await http.post(
-        uri,
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: jsonEncode({
-          "id": "rqdv5juczeskfw1e867",
-          "name": "John Doe",
-          "review": "Great food!"
-        }),
-      );
-
-      if (response.statusCode == 201) {
-        final result = await apiServices.postReview(
-          restaurantId: "rqdv5juczeskfw1e867",
-          name: "John Doe",
-          review: "Great food!",
-        );
-        expect(result.message, "success");
-      } else {
-        fail("Failed to post review");
-      }
+            apiServices.postReview(
+                restaurantId: '1',
+                name: 'John Doe',
+                review: 'Great restaurant!'),
+            throwsException);
+      });
     });
   });
 }

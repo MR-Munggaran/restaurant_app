@@ -27,25 +27,27 @@ class RestaurantDetail {
 
   factory RestaurantDetail.fromJson(Map<String, dynamic> json) {
     return RestaurantDetail(
-      id: json['id'],
-      name: json['name'],
-      description: json['description'],
-      city: json['city'],
-      address: json['address'],
-      pictureId: json['pictureId'],
-      // Handle categories, menus, and customerReviews gracefully when they're not needed
+      id: json['id'] ?? '', // Default to empty string if null
+      name: json['name'] ?? 'Unknown', // Default name if null
+      description: json['description'] ??
+          'No description available', // Default description
+      city: json['city'] ?? 'Unknown City', // Default city if null
+      address: json['address'] ?? 'No address available', // Default address
+      pictureId: json['pictureId'] ?? '', // Default to empty string if null
       categories: json['categories'] != null
           ? List<Category>.from(
               json['categories'].map((x) => Category.fromJson(x)))
           : [],
       menus: json['menus'] != null
           ? Menus.fromJson(json['menus'])
-          : Menus(foods: [], drinks: []),
-      rating: json['rating'] != null ? json['rating'].toDouble() : 0.0,
+          : Menus(foods: [], drinks: []), // Default empty menus
+      rating: json['rating'] != null
+          ? json['rating'].toDouble()
+          : 0.0, // Default rating
       customerReviews: json['customerReviews'] != null
           ? List<CustomerReview>.from(
               json['customerReviews'].map((x) => CustomerReview.fromJson(x)))
-          : [],
+          : [], // Default to empty list
     );
   }
 
@@ -68,8 +70,10 @@ class Category {
   Category({required this.name});
 
   factory Category.fromJson(Map<String, dynamic> json) {
-    return Category(name: json['name']);
+    return Category(
+        name: json['name'] ?? 'Unnamed Category'); // Default name if null
   }
+
   Map<String, dynamic> toJson() {
     return {
       "name": name,
@@ -85,10 +89,15 @@ class Menus {
 
   factory Menus.fromJson(Map<String, dynamic> json) {
     return Menus(
-      foods: List<Food>.from(json['foods'].map((x) => Food.fromJson(x))),
-      drinks: List<Drink>.from(json['drinks'].map((x) => Drink.fromJson(x))),
+      foods: json['foods'] != null
+          ? List<Food>.from(json['foods'].map((x) => Food.fromJson(x)))
+          : [], // Default to empty list if null
+      drinks: json['drinks'] != null
+          ? List<Drink>.from(json['drinks'].map((x) => Drink.fromJson(x)))
+          : [], // Default to empty list if null
     );
   }
+
   Map<String, dynamic> toJson() {
     return {
       "foods": foods.map((food) => food.toJson()).toList(),
@@ -103,8 +112,9 @@ class Food {
   Food({required this.name});
 
   factory Food.fromJson(Map<String, dynamic> json) {
-    return Food(name: json['name']);
+    return Food(name: json['name'] ?? 'Unnamed Food'); // Default name if null
   }
+
   Map<String, dynamic> toJson() {
     return {
       "name": name,
@@ -118,8 +128,9 @@ class Drink {
   Drink({required this.name});
 
   factory Drink.fromJson(Map<String, dynamic> json) {
-    return Drink(name: json['name']);
+    return Drink(name: json['name'] ?? 'Unnamed Drink'); // Default name if null
   }
+
   Map<String, dynamic> toJson() {
     return {
       "name": name,

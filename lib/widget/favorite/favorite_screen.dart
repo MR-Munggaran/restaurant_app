@@ -55,7 +55,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => DetailScreen(restId: restaurant.id),
+                      builder: (context) =>
+                          DetailScreen(restId: restaurant.id.toString()),
                     ),
                   ),
                   leading: ClipRRect(
@@ -70,8 +71,8 @@ class _FavoriteScreenState extends State<FavoriteScreen> {
                       },
                     ),
                   ),
-                  title: Text(restaurant.name),
-                  subtitle: Text(restaurant.city),
+                  title: Text(restaurant.name.toString()),
+                  subtitle: Text(restaurant.city.toString()),
                   trailing: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [

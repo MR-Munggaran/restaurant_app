@@ -14,6 +14,7 @@ class SettingScreen extends StatefulWidget {
 }
 
 class _SettingScreenState extends State<SettingScreen> {
+  @override
   void dispose() {
     selectNotificationStream.close();
     didReceiveLocalNotificationStream.close();

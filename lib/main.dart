@@ -17,6 +17,7 @@ import 'package:restaurant_app/style/theme/restaurant_theme.dart';
 import 'package:restaurant_app/widget/detail/detail_screen.dart';
 import 'package:restaurant_app/widget/main_screen.dart';
 import 'package:restaurant_app/widget/settings/setting_screen.dart';
+import 'package:http/http.dart' as http;
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -25,13 +26,13 @@ void main() async {
     MultiProvider(
       providers: [
         // Services
-        Provider(create: (context) => ApiServices()),
+        Provider(create: (context) => ApiServices(client: http.Client())),
+        Provider(create: (context) => LocalDatabaseService()),
         Provider(
           create: (context) => LocalNotificationService()
             ..init()
             ..configureLocalTimeZone(),
         ),
-        Provider(create: (context) => LocalDatabaseService()),
 
         // State Management Providers
         ChangeNotifierProvider(create: (context) => ThemeProvider()),

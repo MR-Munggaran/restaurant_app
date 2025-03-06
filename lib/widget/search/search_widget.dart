@@ -18,7 +18,8 @@ class SearchWidget extends StatelessWidget {
           onTap: () => Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => DetailScreen(restId: restaurant.id),
+              builder: (context) =>
+                  DetailScreen(restId: restaurant.id.toString()),
             ),
           ),
           child: Padding(
@@ -26,7 +27,7 @@ class SearchWidget extends StatelessWidget {
             child: Row(
               children: [
                 Hero(
-                  tag: restaurant.id,
+                  tag: restaurant.id.toString(),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
                     child: Image.network(
@@ -42,9 +43,9 @@ class SearchWidget extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(restaurant.name,
+                      Text(restaurant.name.toString(),
                           style: Theme.of(context).textTheme.titleMedium),
-                      Text(restaurant.city,
+                      Text(restaurant.city.toString(),
                           style: Theme.of(context).textTheme.labelLarge),
                       Row(
                         children: [

@@ -1,19 +1,19 @@
 class CustomerReview {
-  final String name;
-  final String review;
-  final String date;
+  final String? name; // Made nullable
+  final String? review; // Made nullable
+  final String? date; // Made nullable
 
   CustomerReview({
-    required this.name,
-    required this.review,
-    required this.date,
+    this.name, // Removed 'required' to allow null
+    this.review, // Removed 'required' to allow null
+    this.date, // Removed 'required' to allow null
   });
 
   factory CustomerReview.fromJson(Map<String, dynamic> json) {
     return CustomerReview(
-      name: json['name'],
-      review: json['review'],
-      date: json['date'],
+      name: json['name'] as String?, // Cast to nullable String
+      review: json['review'] as String?, // Cast to nullable String
+      date: json['date'] as String?, // Cast to nullable String
     );
   }
 

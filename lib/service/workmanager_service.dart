@@ -3,12 +3,14 @@ import 'package:restaurant_app/data/api/api_services.dart';
 import 'package:restaurant_app/static/workmanager.dart';
 import 'package:workmanager/workmanager.dart';
 import 'package:restaurant_app/service/local_notification_services.dart';
+import 'package:http/http.dart' as http;
 
 @pragma('vm:entry-point')
 void callbackDispatcher() {
   Workmanager().executeTask((task, inputData) async {
     if (task == MyWorkmanager.periodic.taskName) {
-      final httpService = ApiServices();
+      final httpClient = http.Client();
+      final httpService = ApiServices(client: httpClient);
       try {
         final restaurantData = await httpService.getRandomRestaurant();
         final flutterNotificationService = LocalNotificationService();
@@ -16,8 +18,10 @@ void callbackDispatcher() {
         await flutterNotificationService.init();
 
         int notificationId = 0;
-        String restaurantName = restaurantData.name;
-        String restaurantRate = restaurantData.rating.toString();
+        String restaurantName = restaurantData.name ??
+            "Unknown Restaurant"; // Fallback for null name
+        String restaurantRate =
+            restaurantData.rating?.toString() ?? "No Rating";
 
         await flutterNotificationService.showNotification(
           id: notificationId += 1,
