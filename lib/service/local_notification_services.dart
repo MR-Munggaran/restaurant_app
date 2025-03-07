@@ -136,6 +136,16 @@ class LocalNotificationService {
       'Kamu Mau makan Siang di $resto? Mereka punya rating ${rate.toString()}',
       notificationDetails,
     );
+
+    final receivedNotification = NotificationResto(
+      id: id,
+      nameRestaurant: 'Makan Di $resto?',
+      rating:
+          'Kamu Mau makan Siang di $resto? Mereka punya rating ${rate.toString()}',
+    );
+
+    // Menyimpan ke SharedPreferences
+    await _notifrestoPreferences.saveNotification(receivedNotification);
   }
 
   Future<void> scheduleDailyElevenAMNotification({
