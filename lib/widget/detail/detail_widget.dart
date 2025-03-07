@@ -226,11 +226,14 @@ class DetailWidget extends StatelessWidget {
                                 children: [
                                   Row(
                                     children: [
-                                      Text(review.name.toString(),
-                                          style: Theme.of(context)
-                                              .textTheme
-                                              .bodyLarge
-                                              ?.copyWith(color: Colors.black)),
+                                      Expanded(
+                                        child: Text(review.name.toString(),
+                                            style: Theme.of(context)
+                                                .textTheme
+                                                .bodyLarge
+                                                ?.copyWith(
+                                                    color: Colors.black)),
+                                      ),
                                       const SizedBox(width: 8),
                                       Text(review.date.toString(),
                                           style: Theme.of(context)
